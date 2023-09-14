@@ -1,0 +1,45 @@
+name: Trigger auto deployment for sdfasdfasdf
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ master ]
+    paths:
+    - '//**'
+    - '.github/workflows/sdfasdfasdf-AutoDeployTrigger-5720d983-d5d0-425a-835a-addc4dc2240e.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.SDFASDFASDF_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.SDFASDFASDF_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.SDFASDFASDF_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: tmregtest.azurecr.io
+          registryUsername: ${{ secrets.SDFASDFASDF_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.SDFASDFASDF_REGISTRY_PASSWORD }}
+          containerAppName: sdfasdfasdf
+          resourceGroup: tmauldin-test
+          imageToBuild: tmregtest.azurecr.io/sdfasdfasdf:${{ github.sha }}
+          dockerfilePath: Dockerfile
+
+
